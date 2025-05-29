@@ -11,6 +11,7 @@
   input[type=text], input[type=number], select { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
   button { padding: 10px 15px; border: none; border-radius: 5px; background: #007bff; color: white; cursor: pointer; margin-top: 10px; }
   button:hover { background: #0056b3; }
+  .price-line { margin-top: 10px; font-weight: bold; color: #333; }
   #totalPrice { font-weight: bold; margin-top: 20px; font-size: 1.2em; }
 </style>
 </head>
@@ -26,9 +27,9 @@
 
 <script>
 const serviceTypes = [
-  { name: 'سجاد', unitPrice: 6 },     // السعر لكل متر مربع
-  { name: 'بطانية', unitPrice: 8 },   // السعر لكل بطانية
-  { name: 'لحاف', unitPrice: 8 }      // السعر لكل لحاف
+  { name: 'سجاد', unitPrice: 6 },
+  { name: 'بطانية', unitPrice: 8 },
+  { name: 'لحاف', unitPrice: 8 }
 ];
 
 const servicesContainer = document.getElementById('servicesContainer');
@@ -42,9 +43,8 @@ function createServiceBlock(id) {
   div.className = 'service';
   div.dataset.id = id;
 
-  // اختيار الخدمة
-  const serviceSelectLabel = document.createElement('label');
-  serviceSelectLabel.textContent = 'اختر الخدمة:';
+  const serviceLabel = document.createElement('label');
+  serviceLabel.textContent = 'اختر الخدمة:';
   const serviceSelect = document.createElement('select');
   serviceSelect.name = `serviceType_${id}`;
 
@@ -55,128 +55,105 @@ function createServiceBlock(id) {
     serviceSelect.appendChild(option);
   });
 
-  div.appendChild(serviceSelectLabel);
-  div.appendChild(serviceSelect);
-
-  // حقل إضافي للسجاد (الطول، العرض، اختيار صورة)
-  // وحقل إضافي للبطانية واللحاف (اختيار العدد)
-  const extraFields = document.createElement('div');
-  extraFields.style.marginTop = '10px';
-
-  function updateExtraFields() {
-    extraFields.innerHTML = '';
-    if (serviceSelect.value === 'سجاد') {
-      // طول
-      const lengthLabel = document.createElement('label');
-      lengthLabel.textContent = 'الطول (متر):';
-      const lengthInput = document.createElement('input');
-      lengthInput.type = 'number';
-      lengthInput.min = 0;
-      lengthInput.name = `length_${id}`;
-      lengthInput.value = 1;
-
-      // عرض
-      const widthLabel = document.createElement('label');
-      widthLabel.textContent = 'العرض (متر):';
-      const widthInput = document.createElement('input');
-      widthInput.type = 'number';
-      widthInput.min = 0;
-      widthInput.name = `width_${id}`;
-      widthInput.value = 1;
-
-      // اختيار صورة
-      const imageLabel = document.createElement('label');
-      imageLabel.textContent = 'اختر صورة:';
-      const imageInput = document.createElement('input');
-      imageInput.type = 'file';
-      imageInput.accept = 'image/*';
-      imageInput.name = `image_${id}`;
-
-      extraFields.appendChild(lengthLabel);
-      extraFields.appendChild(lengthInput);
-      extraFields.appendChild(widthLabel);
-      extraFields.appendChild(widthInput);
-      extraFields.appendChild(imageLabel);
-      extraFields.appendChild(imageInput);
-    } else {
-      // البطانية أو اللحاف: حقل اختيار العدد
-      const quantityLabel = document.createElement('label');
-      quantityLabel.textContent = 'العدد:';
-      const quantityInput = document.createElement('input');
-      quantityInput.type = 'number';
-      quantityInput.min = 1;
-      quantityInput.name = `quantity_${id}`;
-      quantityInput.value = 1;
-
-      extraFields.appendChild(quantityLabel);
-      extraFields.appendChild(quantityInput);
-    }
-    updateTotalPrice();
-  }
+  const dynamicFields = document.createElement('div');
+  const priceDisplay = document.createElement('div');
+  priceDisplay.className = 'price-line';
+  priceDisplay.id = `price_${id}`;
+  priceDisplay.textContent = 'السعر: 0 ريال';
 
   serviceSelect.addEventListener('change', () => {
-    updateExtraFields();
+    updateDynamicFields(serviceSelect.value, dynamicFields, priceDisplay, id);
+    calculateTotal();
   });
 
-  div.appendChild(extraFields);
+  div.appendChild(serviceLabel);
+  div.appendChild(serviceSelect);
+  div.appendChild(dynamicFields);
+  div.appendChild(priceDisplay);
 
-  // زر حذف الخدمة
-  const removeBtn = document.createElement('button');
-  removeBtn.textContent = 'حذف الخدمة';
-  removeBtn.style.backgroundColor = '#dc3545';
-  removeBtn.style.marginTop = '10px';
-  removeBtn.addEventListener('click', () => {
-    servicesContainer.removeChild(div);
-    updateTotalPrice();
-  });
+  servicesContainer.appendChild(div);
 
-  div.appendChild(removeBtn);
-
-  // تحديث السعر عند تغير القيم
-  div.addEventListener('input', () => {
-    updateTotalPrice();
-  });
-
-  // بدء بقيم الحقول الإضافية حسب الخدمة الافتراضية
-  updateExtraFields();
-
-  return div;
+  updateDynamicFields(serviceSelect.value, dynamicFields, priceDisplay, id);
 }
 
-function updateTotalPrice() {
+function updateDynamicFields(serviceType, container, priceDisplay, id) {
+  container.innerHTML = '';
+
+  if (serviceType === 'سجاد') {
+    const lengthLabel = document.createElement('label');
+    lengthLabel.textContent = 'الطول (بالمتر):';
+    const lengthInput = document.createElement('input');
+    lengthInput.type = 'number';
+    lengthInput.min = '0';
+    lengthInput.name = `length_${id}`;
+
+    const widthLabel = document.createElement('label');
+    widthLabel.textContent = 'العرض (بالمتر):';
+    const widthInput = document.createElement('input');
+    widthInput.type = 'number';
+    widthInput.min = '0';
+    widthInput.name = `width_${id}`;
+
+    container.appendChild(lengthLabel);
+    container.appendChild(lengthInput);
+    container.appendChild(widthLabel);
+    container.appendChild(widthInput);
+
+    lengthInput.addEventListener('input', () => {
+      calculateTotal();
+    });
+    widthInput.addEventListener('input', () => {
+      calculateTotal();
+    });
+
+  } else if (serviceType === 'بطانية' || serviceType === 'لحاف') {
+    const countLabel = document.createElement('label');
+    countLabel.textContent = 'العدد:';
+    const countInput = document.createElement('input');
+    countInput.type = 'number';
+    countInput.min = '0';
+    countInput.name = `count_${id}`;
+
+    container.appendChild(countLabel);
+    container.appendChild(countInput);
+
+    countInput.addEventListener('input', () => {
+      calculateTotal();
+    });
+  }
+}
+
+function calculateTotal() {
   let total = 0;
 
-  const serviceDivs = document.querySelectorAll('.service');
-  serviceDivs.forEach(div => {
+  document.querySelectorAll('.service').forEach(div => {
     const id = div.dataset.id;
     const serviceType = div.querySelector(`select[name=serviceType_${id}]`).value;
-    const unitPrice = serviceTypes.find(s => s.name === serviceType).unitPrice;
+    const priceElem = document.getElementById(`price_${id}`);
+    let localPrice = 0;
 
     if (serviceType === 'سجاد') {
-      const length = parseFloat(div.querySelector(`input[name=length_${id}]`).value) || 0;
-      const width = parseFloat(div.querySelector(`input[name=width_${id}]`).value) || 0;
+      const length = parseFloat(div.querySelector(`[name=length_${id}]`)?.value || 0);
+      const width = parseFloat(div.querySelector(`[name=width_${id}]`)?.value || 0);
       const area = length * width;
-      total += unitPrice * area;
-    } else {
-      // بطانية أو لحاف
-      const quantity = parseInt(div.querySelector(`input[name=quantity_${id}]`).value) || 0;
-      total += unitPrice * quantity;
+      localPrice = area * 6;
+    } else if (serviceType === 'بطانية' || serviceType === 'لحاف') {
+      const count = parseInt(div.querySelector(`[name=count_${id}]`)?.value || 0);
+      localPrice = count * 8;
     }
+
+    priceElem.textContent = `السعر: ${localPrice.toFixed(2)} ريال`;
+    total += localPrice;
   });
 
   totalPriceElem.textContent = `السعر الإجمالي: ${total.toFixed(2)} ريال`;
 }
 
 addServiceBtn.addEventListener('click', () => {
-  servicesCount++;
-  const newService = createServiceBlock(servicesCount);
-  servicesContainer.appendChild(newService);
-  updateTotalPrice();
+  createServiceBlock(++servicesCount);
 });
 
-// أضف أول خدمة تلقائياً
-addServiceBtn.click();
-
+createServiceBlock(++servicesCount);
 </script>
 
 </body>
