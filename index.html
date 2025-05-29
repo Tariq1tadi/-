@@ -6,9 +6,19 @@
 <title>طلب خدمات التنظيف</title>
 <style>
   body { font-family: Arial, sans-serif; direction: rtl; margin: 20px; background: #f9f9f9; }
+  .logo-container {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .logo-container img {
+    height: 80px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    border-radius: 8px;
+  }
   .service { background: #fff; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
   label { display: block; margin: 8px 0 4px; }
   input[type=text], input[type=number], select { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+  input[type=file] { margin-top: 8px; }
   button { padding: 10px 15px; border: none; border-radius: 5px; background: #007bff; color: white; cursor: pointer; margin-top: 10px; }
   button:hover { background: #0056b3; }
   .price-line { margin-top: 10px; font-weight: bold; color: #333; }
@@ -16,6 +26,10 @@
 </style>
 </head>
 <body>
+
+<div class="logo-container">
+  <img src="logo.png" alt="شعار الموقع">
+</div>
 
 <h2>اختر خدمات التنظيف</h2>
 
@@ -78,6 +92,17 @@ function createServiceBlock(id) {
 
 function updateDynamicFields(serviceType, container, priceDisplay, id) {
   container.innerHTML = '';
+
+  // حقل رفع الصورة مشترك لكل الخدمات
+  const imageLabel = document.createElement('label');
+  imageLabel.textContent = 'اختر صورة للخدمة:';
+  const imageInput = document.createElement('input');
+  imageInput.type = 'file';
+  imageInput.accept = 'image/*';
+  imageInput.name = `image_${id}`;
+
+  container.appendChild(imageLabel);
+  container.appendChild(imageInput);
 
   if (serviceType === 'سجاد') {
     const lengthLabel = document.createElement('label');
@@ -156,9 +181,5 @@ addServiceBtn.addEventListener('click', () => {
 createServiceBlock(++servicesCount);
 </script>
 
-</body><div style="background: #004aad; color: white; padding: 20px; text-align: center;">
-  <img src="logo.png" alt="شعار الموقع" style="height: 80px;"><br>
-  <h1>مرحبا بكم في موقع التنظيف</h1>
-</div>
-
+</body>
 </html>
