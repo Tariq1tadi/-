@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>طلب خدمات التنظيف</title>
+<style>
+  body { font-family: Arial, sans-serif; direction: rtl; margin: 20px; background: #f9f9f9; }
+  .service { background: #fff; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+  label { display: block; margin: 8px 0 4px; }
+  input[type=text], input[type=number], select { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+  button { padding: 10px 15px; border: none; border-radius: 5px; background: #007bff; color: white; cursor: pointer; margin-top: 10px; }
+  button:hover { background: #0056b3; }
+  #totalPrice { font-weight: bold; margin-top: 20px; font-size: 1.2em; }
+</style>
+</head>
+<body>
+
+<h2>اختر خدمات التنظيف</h2>
+
+<div id="servicesContainer"></div>
+
+<button id="addServiceBtn">أضف خدمة</button>
+
+<div id="totalPrice">السعر الإجمالي: 0 ريال</div>
+
+<script>
+const serviceTypes = [
+  { name: 'سجاد', basePrice: 20 },
+  { name: 'بطانية', basePrice: 30 },
+  { name: 'لحاف', basePrice: 40 }
+];
+
+const servicesContainer = document.getElementById('servicesContainer');
+const addServiceBtn = document.getElementById('addServiceBtn');
+const totalPriceElem = document.getElementById('totalPrice');
+
+let servicesCount = 0;
+
+function createServiceBlock(id) {
+  const div = document.createElement('div');
+  div.className = 'service';
+  div.dataset.id = id;
+
+  // اختيار الخدمة
+  const serviceSelectLabel = document.createElement('label');
+  serviceSelectLabel.textContent = 'اختر الخدمة:';
+  const serviceSelect = document.createElement('select');
+  serviceSelect.name = `serviceType_${id}`;
+
+  serviceTypes.forEach(s => {
+    const option = document.createElement('option');
+    option.value = s.name;
+    option.textContent = s.name;
+    serviceSelect.appendChild(option);
+  });
+
+  div.appendChild(serviceSelectLabel);
+  div.appendChild(serviceSelect);
+
+  // حقل إضافي للسجاد (الطول، العرض، اختيار صورة)
+  const extraFields = document.createElement('div');
+  extraFields.style.marginTop = '10px';
+
+  function updateExtraFields() {
+    extraFields.innerHTML = '';
+    if (serviceSelect.value === 'سجاد') {
+      // طول
+      const lengthLabel = document.createElement('label');
+      lengthLabel.textContent = 'الطول (متر):';
+      const lengthInput = document.createElement('input');
+      lengthInput.type = 'number';
+      lengthInput.min = 0;
+      lengthInput.name = `length_${id}`;
+      lengthInput.value = 1;
+
+      // عرض
+      const widthLabel = document.createElement('label');
+      widthLabel.textContent = 'العرض (متر):';
+      const widthInput = document.createElement('input');
+      widthInput.type = 'number';
+      widthInput.min = 0;
+      widthInput.name = `width_${id}`;
+      widthInput.value = 1;
+
+      // اختيار صورة
+      const imageLabel = document.createElement('label');
+      imageLabel.textContent = 'اختر صورة:';
+      const imageInput = document.createElement('input');
+      imageInput.type = 'file';
+      imageInput.accept = 'image/*';
+      imageInput.name = `image_${id}`;
+
+      extraFields.appendChild(lengthLabel);
+      extraFields.appendChild(lengthInput);
+      extraFields.appendChild(widthLabel);
+      extraFields.appendChild(widthInput);
+      extraFields.appendChild(imageLabel);
+      extraFields.appendChild(imageInput);
+    }
+    updateTotalPrice();
+  }
+
+  serviceSelect.addEventListener('change', () => {
+    updateExtraFields();
+  });
+
+  div.appendChild(extraFields);
+
+  // زر حذف الخدمة
+  const removeBtn = document.createElement('button');
+  removeBtn.textContent = 'حذف الخدمة';
+  removeBtn.style.backgroundColor = '#dc3545';
+  removeBtn.style.marginTop = '10px';
+  removeBtn.addEventListener('click', () => {
+    servicesContainer.removeChild(div);
+    updateTotalPrice();
+  });
+
+  div.appendChild(removeBtn);
+
+  // تحديث السعر عند تغير القيم
+  div.addEventListener('input', () => {
+    updateTotalPrice();
+  });
+
+  // بدء بقيم الحقول الإضافية حسب الخدمة الافتراضية
+  updateExtraFields();
+
+  return div;
+}
+
+function updateTotalPrice() {
+  let total = 0;
+
+  const serviceDivs = document.querySelectorAll('.service');
+  serviceDivs.forEach(div => {
+    const id = div.dataset.id;
+    const serviceType = div.querySelector(`select[name=serviceType_${id}]`).value;
+    const basePrice = serviceTypes.find(s => s.name === serviceType).basePrice;
+
+    if (serviceType === 'سجاد') {
+      const length = parseFloat(div.querySelector(`input[name=length_${id}]`).value) || 0;
+      const width = parseFloat(div.querySelector(`input[name=width_${id}]`).value) || 0;
+      // السعر = السعر الأساسي * المساحة
+      total += basePrice * (length * width);
+    } else {
+      total += basePrice;
+    }
+  });
+
+  totalPriceElem.textContent = `السعر الإجمالي: ${total.toFixed(2)} ريال`;
+}
+
+addServiceBtn.addEventListener('click', () => {
+  servicesCount++;
+  const newService = createServiceBlock(servicesCount);
+  servicesContainer.appendChild(newService);
+  updateTotalPrice();
+});
+
+// أضف أول خدمة تلقائياً
+addServiceBtn.click();
+
+</script>
+
+</body>
+</html>
