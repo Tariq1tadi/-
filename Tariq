@@ -1,4 +1,0 @@
-<?php
-// مثال بسيط لبدء دمج بوابة الدفع
-echo "Welcome to payment gateway integration!";
-?>
