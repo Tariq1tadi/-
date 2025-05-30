@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>تأكيد الطلب</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Almarai:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.19.0/maps/maps.css" rel="stylesheet" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      font-family: 'Cairo', 'Almarai', 'Tajawal', Arial, sans-serif;
+      direction: rtl;
+      background: #f3f3f3;
+      color: #333;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    body {
+      margin: 20px;
+    }
+
+    h2 {
+      color: #1565c0; /* نفس الأزرق المستخدم */
+      font-weight: 900;
+      font-size: 1.4rem;
+      text-align: center;
+      margin-bottom: 25px;
+      font-family: 'Cairo', 'Almarai', 'Tajawal', sans-serif;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #1565c0;
+      font-family: 'Cairo', 'Almarai', 'Tajawal', sans-serif;
+    }
+
+    input, select, button {
+      width: 100%;
+      max-width: 100%;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 1.5px solid #ccc;
+      box-sizing: border-box;
+      font-size: 16px;
+      font-family: 'Cairo', 'Almarai', 'Tajawal', sans-serif;
+      transition: border-color 0.3s ease;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #1565c0;
+      box-shadow: 0 0 5px rgba(21, 101, 192, 0.5);
+    }
+
+    button {
+      background-color: #1565c0;
+      color: white;
+      border: none;
+      margin-top: 20px;
+      cursor: pointer;
+      font-weight: 900;
+      font-size: 1.1rem;
+      border-radius: 30px;
+      padding: 15px 0;
+      box-shadow: 0 4px 12px rgba(21, 101, 192, 0.7);
+      transition: background-color 0.3s ease;
+      font-family: 'Cairo', 'Almarai', 'Tajawal', sans-serif;
+    }
+    button:hover {
+      background-color: #0d3f7f;
+    }
+
+    #mapContainer {
+      display: none;
+      margin-top: 20px;
+      width: 100%;
+      max-width: 400px;
+      height: 320px;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+      padding: 12px;
+      background: white;
+      box-sizing: border-box;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #map {
+      height: 250px;
+      width: 100%;
+      max-width: 100%;
+      border-radius: 12px;
+    }
+
+    #addressOutput {
+      margin-top: 12px;
+      font-weight: 700;
+      color: #1565c0;
+      min-height: 28px;
+      text-align: center;
+      font-family: 'Cairo', 'Almarai', 'Tajawal', sans-serif;
+      font-size: 1rem;
+    }
+
+    /* تحسينات إضافية للموبايل */
+    @media (max-width: 500px) {
+      body {
+        margin: 15px 10px;
+        font-size: 13px;
+      }
+      h2 {
+        font-size: 1.2rem;
+      }
+      button {
+        font-size: 1rem;
+        padding: 12px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>تأكيد الطلب</h2>
+
+  <label for="fullName">الاسم الكامل:</label>
+  <input type="text" id="fullName" required placeholder="اكتب اسمك الكامل" />
+
+  <label for="citySelect">المدينة:</label>
+  <select id="citySelect" disabled>
+    <option selected>جدة</option>
+  </select>
+
+  <label for="searchInput">اسم الحي (إجباري):</label>
+  <input type="text" id="searchInput" placeholder="اكتب اسم الحي (مثال: حي النسيم)" />
+
+  <label for="mapToggleSelect">هل تريد تحديد العنوان عن طريق الخرائط؟</label>
+  <select id="mapToggleSelect">
+    <option value="no" selected>لا</option>
+    <option value="yes">نعم</option>
+  </select>
+
+  <div id="mapContainer">
+    <div id="map"></div>
+    <div id="addressOutput">لم يتم اختيار موقع بعد</div>
+  </div>
+
+  <button id="goToPaymentBtn">الانتقال إلى الدفع</button>
+
+  <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.19.0/maps/maps-web.min.js"></script>
+
+  <script>
+    const apiKey = '31iqZGZC77BlqvybMoXUZHvSJGGIUM6H'; // تأكد تغيره لمفتاحك
+
+    let map;
+    let marker;
+
+    const mapContainer = document.getElementById('mapContainer');
+    const mapToggleSelect = document.getElementById('mapToggleSelect');
+    const addressOutput = document.getElementById('addressOutput');
+    let mapInitialized = false;
+
+    mapToggleSelect.addEventListener('change', function() {
+      if (this.value === 'yes') {
+        mapContainer.style.display = 'block';
+        if (!mapInitialized) {
+          setTimeout(initMap, 200);
+        } else {
+          map.resize();
+        }
+      } else {
+        mapContainer.style.display = 'none';
+      }
+    });
+
+    function initMap() {
+      map = tt.map({
+        key: apiKey,
+        container: 'map',
+        center: [39.1925, 21.4858], // جدة (lon, lat)
+        zoom: 12
+      });
+
+      map.on('click', function(e) {
+        const coords = e.lngLat;
+
+        if (marker) {
+          marker.setLngLat(coords);
+        } else {
+          marker = new tt.Marker().setLngLat(coords).addTo(map);
+        }
+
+        // نستخدم geocoding عكسي للحصول على اسم الحي
+        fetch(`https://api.tomtom.com/search/2/reverseGeocode/${coords.lat},${coords.lng}.json?key=${apiKey}&language=ar&limit=1`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.addresses && data.addresses.length > 0) {
+              const addr = data.addresses[0].address;
+              const neighborhood = addr.municipalitySubdivision || addr.municipality || addr.freeformAddress || "غير معروف";
+              addressOutput.textContent = `الحي: ${neighborhood}`;
+            } else {
+              addressOutput.textContent = "تعذر تحديد الحي.";
+            }
+          })
+          .catch(() => {
+            addressOutput.textContent = "تعذر تحديد الحي.";
+          });
+      });
+
+      mapInitialized = true;
+    }
+  </script>
+</body>
+</html>
