@@ -13,6 +13,7 @@
     margin: 0;
     background: #fafafa;
     color: #333;
+    font-size: 12px; /* حجم الخط مصغر */
   }
   header {
     background: #1565c0;
@@ -31,7 +32,7 @@
   }
   header h1 {
     font-weight: 900;
-    font-size: 1.6rem;
+    font-size: 1rem; /* تعديل حجم العنوان */
     margin: 0;
   }
   .banner {
@@ -48,7 +49,7 @@
     position: absolute;
     bottom: 15px;
     right: 20px;
-    font-size: 1.8rem;
+    font-size: 1rem; /* تصغير الخط */
     font-weight: 900;
     color: white;
     text-shadow: 0 0 8px rgba(0,0,0,0.7);
@@ -63,6 +64,7 @@
     margin-bottom: 20px;
     color: #1565c0;
     font-weight: 900;
+    font-size: 1.1rem; /* تصغير العنوان */
   }
   .accordion {
     background: white;
@@ -74,7 +76,7 @@
   .accordion-header {
     cursor: pointer;
     padding: 15px 20px;
-    font-size: 18px;
+    font-size: 14px; /* تصغير حجم الخط */
     font-weight: 700;
     display: flex;
     justify-content: space-between;
@@ -116,11 +118,12 @@
     font-weight: 600;
     display: block;
     margin-bottom: 6px;
+    font-size: 12px; /* تصغير الخط */
   }
   select, input[type="number"], input[type="file"] {
     width: 100%;
     padding: 10px;
-    font-size: 16px;
+    font-size: 12px; /* تصغير حجم الخط */
     border-radius: 7px;
     border: 1px solid #ccc;
     box-sizing: border-box;
@@ -141,6 +144,7 @@
     margin-top: 10px;
     transition: background-color 0.3s ease;
     font-family: 'Cairo', 'Almarai', 'Tajawal', sans-serif;
+    font-size: 12px; /* تصغير حجم الخط */
   }
   .btn-delete:hover {
     background: #b71c1c;
@@ -151,7 +155,7 @@
     border: none;
     width: 100%;
     padding: 15px 0;
-    font-size: 18px;
+    font-size: 14px; /* تصغير الخط */
     font-weight: 800;
     border-radius: 30px;
     cursor: pointer;
@@ -164,7 +168,7 @@
     background: #0d47a1;
   }
   #totalPrice {
-    font-size: 22px;
+    font-size: 16px; /* حجم الخط متوسط */
     font-weight: 900;
     color: #0d47a1;
     text-align: center;
@@ -177,7 +181,7 @@
     border: none;
     width: 100%;
     padding: 15px 0;
-    font-size: 18px;
+    font-size: 14px; /* تصغير الخط */
     font-weight: 900;
     border-radius: 30px;
     cursor: not-allowed;
@@ -196,7 +200,7 @@
   }
   footer {
     text-align: center;
-    font-size: 14px;
+    font-size: 10px; /* تصغير الخط */
     color: #777;
     padding: 15px 10px;
     border-top: 1px solid #ddd;
@@ -213,6 +217,7 @@
     color: #1565c0;
     margin-bottom: 20px;
     font-weight: 900;
+    font-size: 1.1rem; /* تصغير الخط */
   }
   .feature-list {
     display: grid;
@@ -230,6 +235,7 @@
     align-items: center;
     gap: 10px;
     font-family: 'Cairo', 'Almarai', 'Tajawal', sans-serif;
+    font-size: 12px; /* تصغير الخط */
   }
   .feature-item svg {
     width: 24px;
@@ -241,10 +247,10 @@
       margin: 0 10px 40px;
     }
     header h1 {
-      font-size: 1.3rem;
+      font-size: 1rem;
     }
     .banner::after {
-      font-size: 1.3rem;
+      font-size: 1rem;
       right: 15px;
       bottom: 12px;
     }
@@ -408,11 +414,16 @@
 
     function updateInputs() {
       const selected = select.value;
-      if (selected === 'لحاف' || selected === 'بطانية') {
+      if (selected === 'غسيل ألحف' || selected === 'غسيل بطانيات') {
+        // إظهار العدد فقط
         lengthInputs.forEach(i => i.parentElement.style.display = 'none');
         countGroup.style.display = 'block';
-      } else {
+      } else if (selected === 'غسيل سجاد') {
+        // إظهار الطول والعرض فقط
         lengthInputs.forEach(i => i.parentElement.style.display = 'block');
+        countGroup.style.display = 'none';
+      } else {
+        lengthInputs.forEach(i => i.parentElement.style.display = 'none');
         countGroup.style.display = 'none';
       }
       updatePrice();
@@ -424,10 +435,10 @@
       const type = select.value;
       const service = serviceTypes.find(s => s.name === type);
       let price = 0;
-      if (type === 'لحاف' || type === 'بطانية') {
+      if (type === 'غسيل ألحف' || type === 'غسيل بطانيات') {
         const count = parseInt(countInput.value) || 0;
         price = count * service.unitPrice;
-      } else {
+      } else if (type === 'غسيل سجاد') {
         const length = parseFloat(lengthInputs[0].value) || 0;
         const width = parseFloat(lengthInputs[1].value) || 0;
         price = length * width * service.unitPrice;
@@ -456,69 +467,8 @@
     checkOrderButton();
   });
 
-  // تفعيل الزر عند وجود خدمة على الأقل (في حالة تحميل الصفحة)
   checkOrderButton();
 </script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>طلب خدمات التنظيف</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Almarai:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet" />
-<style>
-  body {
-    font-family: 'Cairo', 'Almarai', 'Tajawal', sans-serif;
-    direction: rtl;
-    margin: 0;
-    background: #fafafa;
-    color: #333;
-    font-size: 12px;
-  }
-  header h1 {
-    font-size: 1rem;
-  }
-  .banner::after {
-    font-size: 1rem;
-  }
-  h2 {
-    font-size: 1.1rem;
-  }
-  .accordion-header {
-    font-size: 14px;
-  }
-  label {
-    font-size: 12px;
-  }
-  select, input[type="number"], input[type="file"] {
-    font-size: 12px;
-  }
-  .btn-delete {
-    font-size: 12px;
-  }
-  #addServiceBtn, #completeOrderBtn {
-    font-size: 14px;
-  }
-  #totalPrice {
-    font-size: 16px;
-  }
-  .features h3 {
-    font-size: 1.1rem;
-  }
-  .feature-item {
-    font-size: 12px;
-  }
-  footer {
-    font-size: 10px;
-  }
-</style>
-</head>
-<body>
-
-<!-- باقي الكود يبقى كما هو بدون تغيير -->
 
 </body>
 </html>
