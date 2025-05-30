@@ -4,182 +4,521 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>طلب خدمات التنظيف</title>
+<!-- إضافة خطوط جوجل عربية -->
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Almarai:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet" />
 <style>
-  body { font-family: Arial, sans-serif; direction: rtl; margin: 20px; background: #f9f9f9; }
-  .logo-container {
+  body {
+    font-family: 'Cairo', 'Almarai', 'Tajawal', sans-serif;
+    direction: rtl;
+    margin: 0;
+    background: #fafafa;
+    color: #333;
+  }
+  header {
+    background: #1565c0;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: white;
+  }
+  header img.logo {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: white;
+    padding: 5px;
+  }
+  header h1 {
+    font-weight: 900;
+    font-size: 1.6rem;
+    margin: 0;
+  }
+  .banner {
+    background: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+    height: 180px;
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin-bottom: 25px;
+  }
+  .banner::after {
+    content: "خدمات التنظيف الاحترافية";
+    position: absolute;
+    bottom: 15px;
+    right: 20px;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: white;
+    text-shadow: 0 0 8px rgba(0,0,0,0.7);
+  }
+  main {
+    max-width: 480px;
+    margin: 0 auto 50px;
+    padding: 0 15px;
+  }
+  h2 {
     text-align: center;
     margin-bottom: 20px;
+    color: #1565c0;
+    font-weight: 900;
   }
-  .logo-container img {
-    height: 80px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    border-radius: 8px;
+  .accordion {
+    background: white;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+    overflow: hidden;
   }
-  .service { background: #fff; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-  label { display: block; margin: 8px 0 4px; }
-  input[type=text], input[type=number], select { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
-  input[type=file] { margin-top: 8px; }
-  button { padding: 10px 15px; border: none; border-radius: 5px; background: #007bff; color: white; cursor: pointer; margin-top: 10px; }
-  button:hover { background: #0056b3; }
-  .price-line { margin-top: 10px; font-weight: bold; color: #333; }
-  #totalPrice { font-weight: bold; margin-top: 20px; font-size: 1.2em; }
+  .accordion-header {
+    cursor: pointer;
+    padding: 15px 20px;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    background-color: #e3f2fd;
+    border-bottom: 1px solid #90caf9;
+    position: relative;
+  }
+  .accordion-header:hover {
+    background-color: #bbdefb;
+  }
+  /* السهم */
+  .accordion-header::after {
+    content: "▼";
+    font-size: 20px;
+    color: #0d47a1;
+    transition: transform 0.3s ease;
+    margin-left: 10px;
+    display: inline-block;
+  }
+  .accordion-header.active::after {
+    transform: rotate(-180deg);
+  }
+  .accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    background: #f7fbff;
+    padding: 0 20px;
+  }
+  .accordion-content.open {
+    padding: 15px 20px;
+  }
+  .form-group {
+    margin-bottom: 15px;
+  }
+  label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
+  }
+  select, input[type="number"], input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 7px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-family: 'Cairo', 'Almarai', 'Tajawal', sans-serif;
+  }
+  input[type="file"] {
+    padding: 4px 8px;
+  }
+  .btn-delete {
+    background: #e53935;
+    color: white;
+    border: none;
+    padding: 10px 0;
+    width: 100%;
+    font-weight: 700;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+    font-family: 'Cairo', 'Almarai', 'Tajawal', sans-serif;
+  }
+  .btn-delete:hover {
+    background: #b71c1c;
+  }
+  #addServiceBtn {
+    background: #1565c0;
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 15px 0;
+    font-size: 18px;
+    font-weight: 800;
+    border-radius: 30px;
+    cursor: pointer;
+    margin: 25px 0 15px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 12px rgba(21,101,192,0.4);
+    font-family: 'Cairo', 'Almarai', 'Tajawal', sans-serif;
+  }
+  #addServiceBtn:hover {
+    background: #0d47a1;
+  }
+  #totalPrice {
+    font-size: 22px;
+    font-weight: 900;
+    color: #0d47a1;
+    text-align: center;
+    margin-bottom: 15px;
+    display: none; /* مخفي في البداية */
+  }
+  #completeOrderBtn {
+    background: #2e7d32;
+    color: white;
+    border: none;
+    width: 100%;
+    padding: 15px 0;
+    font-size: 18px;
+    font-weight: 900;
+    border-radius: 30px;
+    cursor: not-allowed;
+    box-shadow: 0 4px 12px rgba(46,125,50,0.3);
+    transition: background-color 0.3s ease;
+    text-decoration: line-through;
+    font-family: 'Cairo', 'Almarai', 'Tajawal', sans-serif;
+  }
+  #completeOrderBtn.enabled {
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(46,125,50,0.6);
+    text-decoration: none;
+  }
+  #completeOrderBtn.enabled:hover {
+    background: #1b5e20;
+  }
+  footer {
+    text-align: center;
+    font-size: 14px;
+    color: #777;
+    padding: 15px 10px;
+    border-top: 1px solid #ddd;
+    font-family: 'Cairo', 'Almarai', 'Tajawal', sans-serif;
+  }
+  /* مميزات الشركة */
+  .features {
+    max-width: 480px;
+    margin: 30px auto 50px;
+    padding: 0 15px;
+  }
+  .features h3 {
+    text-align: center;
+    color: #1565c0;
+    margin-bottom: 20px;
+    font-weight: 900;
+  }
+  .feature-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+  .feature-item {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    font-weight: 600;
+    color: #0d47a1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Cairo', 'Almarai', 'Tajawal', sans-serif;
+  }
+  .feature-item svg {
+    width: 24px;
+    height: 24px;
+    fill: #1565c0;
+  }
+  @media (max-width: 500px) {
+    main, .features {
+      margin: 0 10px 40px;
+    }
+    header h1 {
+      font-size: 1.3rem;
+    }
+    .banner::after {
+      font-size: 1.3rem;
+      right: 15px;
+      bottom: 12px;
+    }
+    .feature-list {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
 </head>
 <body>
 
-<div class="logo-container">
-  <img src="logo.png" alt="شعار الموقع">
+<header>
+  <img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png" alt="Logo" class="logo" />
+  <h1>شركة التنظيف الذكي</h1>
+</header>
+
+<div class="banner"></div>
+
+<main>
+  <h2>طلب خدمات التنظيف</h2>
+  <div id="servicesContainer"></div>
+
+  <button id="addServiceBtn">إضافة خدمة جديدة</button>
+
+  <p id="totalPrice">السعر الإجمالي: 0 ريال</p>
+
+  <button id="completeOrderBtn" disabled>تأكيد الطلب</button>
+</main>
+
+<div class="features">
+  <h3>مميزات شركتنا</h3>
+  <div class="feature-list">
+    <div class="feature-item">
+      <svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5L4 14l5 5 12-12-1.5-1.5z"/></svg>
+      جودة عالية
+    </div>
+    <div class="feature-item">
+      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm0 18a8 8 0 118-8 8 8 0 01-8 8z"/><path d="M7 12l3 3 7-7"/></svg>
+      سرعة في التنفيذ
+    </div>
+    <div class="feature-item">
+      <svg viewBox="0 0 24 24"><path d="M12 4a8 8 0 018 8 8 8 0 11-16 0 8 8 0 018-8z"/><path d="M11 10h2v6h-2zM11 16h2v2h-2z"/></svg>
+      أسعار منافسة
+    </div>
+    <div class="feature-item">
+      <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5H7z"/></svg>
+      فريق محترف
+    </div>
+  </div>
 </div>
 
-<h2>اختر خدمات التنظيف</h2>
-
-<div id="servicesContainer"></div>
-
-<button id="addServiceBtn">أضف خدمة</button>
-
-<div id="totalPrice">السعر الإجمالي: 0 ريال</div>
+<footer>
+  جميع الحقوق محفوظة &copy; شركة التنظيف الذكي 2025
+</footer>
 
 <script>
-const serviceTypes = [
-  { name: 'سجاد', unitPrice: 6 },
-  { name: 'بطانية', unitPrice: 8 },
-  { name: 'لحاف', unitPrice: 8 }
-];
+  const serviceTypes = [
+    { name: 'غسيل سجاد', unitPrice: 12 },
+    { name: 'غسيل ألحف', unitPrice: 15 },
+    { name: 'غسيل بطانيات', unitPrice: 15 }
+  ];
 
-const servicesContainer = document.getElementById('servicesContainer');
-const addServiceBtn = document.getElementById('addServiceBtn');
-const totalPriceElem = document.getElementById('totalPrice');
+  const container = document.getElementById('servicesContainer');
+  const addServiceBtn = document.getElementById('addServiceBtn');
+  const totalPriceEl = document.getElementById('totalPrice');
+  const completeOrderBtn = document.getElementById('completeOrderBtn');
 
-let servicesCount = 0;
-
-function createServiceBlock(id) {
-  const div = document.createElement('div');
-  div.className = 'service';
-  div.dataset.id = id;
-
-  const serviceLabel = document.createElement('label');
-  serviceLabel.textContent = 'اختر الخدمة:';
-  const serviceSelect = document.createElement('select');
-  serviceSelect.name = `serviceType_${id}`;
-
-  serviceTypes.forEach(s => {
-    const option = document.createElement('option');
-    option.value = s.name;
-    option.textContent = s.name;
-    serviceSelect.appendChild(option);
-  });
-
-  const dynamicFields = document.createElement('div');
-  const priceDisplay = document.createElement('div');
-  priceDisplay.className = 'price-line';
-  priceDisplay.id = `price_${id}`;
-  priceDisplay.textContent = 'السعر: 0 ريال';
-
-  serviceSelect.addEventListener('change', () => {
-    updateDynamicFields(serviceSelect.value, dynamicFields, priceDisplay, id);
-    calculateTotal();
-  });
-
-  div.appendChild(serviceLabel);
-  div.appendChild(serviceSelect);
-  div.appendChild(dynamicFields);
-  div.appendChild(priceDisplay);
-
-  servicesContainer.appendChild(div);
-
-  updateDynamicFields(serviceSelect.value, dynamicFields, priceDisplay, id);
-}
-
-function updateDynamicFields(serviceType, container, priceDisplay, id) {
-  container.innerHTML = '';
-
-  // حقل رفع الصورة مشترك لكل الخدمات
-  const imageLabel = document.createElement('label');
-  imageLabel.textContent = 'اختر صورة للخدمة:';
-  const imageInput = document.createElement('input');
-  imageInput.type = 'file';
-  imageInput.accept = 'image/*';
-  imageInput.name = `image_${id}`;
-
-  container.appendChild(imageLabel);
-  container.appendChild(imageInput);
-
-  if (serviceType === 'سجاد') {
-    const lengthLabel = document.createElement('label');
-    lengthLabel.textContent = 'الطول (بالمتر):';
-    const lengthInput = document.createElement('input');
-    lengthInput.type = 'number';
-    lengthInput.min = '0';
-    lengthInput.name = `length_${id}`;
-
-    const widthLabel = document.createElement('label');
-    widthLabel.textContent = 'العرض (بالمتر):';
-    const widthInput = document.createElement('input');
-    widthInput.type = 'number';
-    widthInput.min = '0';
-    widthInput.name = `width_${id}`;
-
-    container.appendChild(lengthLabel);
-    container.appendChild(lengthInput);
-    container.appendChild(widthLabel);
-    container.appendChild(widthInput);
-
-    lengthInput.addEventListener('input', () => {
-      calculateTotal();
+  function updateTotalPrice() {
+    let total = 0;
+    const accordions = container.querySelectorAll('.accordion');
+    accordions.forEach(acc => {
+      const header = acc.querySelector('.accordion-header');
+      const priceText = header.querySelector('.price').textContent;
+      const price = parseFloat(priceText.replace(' ريال', '')) || 0;
+      total += price;
     });
-    widthInput.addEventListener('input', () => {
-      calculateTotal();
-    });
-
-  } else if (serviceType === 'بطانية' || serviceType === 'لحاف') {
-    const countLabel = document.createElement('label');
-    countLabel.textContent = 'العدد:';
-    const countInput = document.createElement('input');
-    countInput.type = 'number';
-    countInput.min = '0';
-    countInput.name = `count_${id}`;
-
-    container.appendChild(countLabel);
-    container.appendChild(countInput);
-
-    countInput.addEventListener('input', () => {
-      calculateTotal();
-    });
+    totalPriceEl.textContent = 'السعر الإجمالي: ' + total.toFixed(2) + ' ريال';
+    totalPriceEl.style.display = total > 0 ? 'block' : 'none';
+    if(total > 0) {
+      completeOrderBtn.disabled = false;
+      completeOrderBtn.classList.add('enabled');
+    } else {
+      completeOrderBtn.disabled = true;
+      completeOrderBtn.classList.remove('enabled');
+    }
   }
-}
 
-function calculateTotal() {
-  let total = 0;
+  function checkOrderButton() {
+    const anyServices = container.querySelectorAll('.accordion').length > 0;
+    completeOrderBtn.disabled = !anyServices;
+    if (anyServices) {
+      completeOrderBtn.classList.add('enabled');
+    } else {
+      completeOrderBtn.classList.remove('enabled');
+    }
+  }
 
-  document.querySelectorAll('.service').forEach(div => {
-    const id = div.dataset.id;
-    const serviceType = div.querySelector(`select[name=serviceType_${id}]`).value;
-    const priceElem = document.getElementById(`price_${id}`);
-    let localPrice = 0;
+  function createAccordion() {
+    // إغلاق كل التبويبات المفتوحة حالياً
+    const allHeaders = container.querySelectorAll('.accordion-header');
+    const allContents = container.querySelectorAll('.accordion-content');
+    allHeaders.forEach(header => header.classList.remove('active'));
+    allContents.forEach(content => {
+      content.classList.remove('open');
+      content.style.maxHeight = null;
+    });
 
-    if (serviceType === 'سجاد') {
-      const length = parseFloat(div.querySelector(`[name=length_${id}]`)?.value || 0);
-      const width = parseFloat(div.querySelector(`[name=width_${id}]`)?.value || 0);
-      const area = length * width;
-      localPrice = area * 6;
-    } else if (serviceType === 'بطانية' || serviceType === 'لحاف') {
-      const count = parseInt(div.querySelector(`[name=count_${id}]`)?.value || 0);
-      localPrice = count * 8;
+    // إنشاء التبويب الجديد
+    const accordion = document.createElement('div');
+    accordion.className = 'accordion';
+
+    const header = document.createElement('div');
+    header.className = 'accordion-header';
+    header.innerHTML = `<span>خدمة جديدة</span> <span class="price">0 ريال</span>`;
+    accordion.appendChild(header);
+
+    const content = document.createElement('div');
+    content.className = 'accordion-content';
+
+    content.innerHTML = `
+      <div class="form-group">
+        <label>اختر نوع الخدمة:</label>
+        <select>
+          ${serviceTypes.map(s => `<option value="${s.name}">${s.name}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group length-width-group">
+        <label>الطول (م):</label>
+        <input type="number" min="0" step="0.01" />
+      </div>
+      <div class="form-group length-width-group">
+        <label>العرض (م):</label>
+        <input type="number" min="0" step="0.01" />
+      </div>
+      <div class="form-group count-group" style="display:none;">
+        <label>العدد:</label>
+        <input type="number" min="0" />
+      </div>
+      <div class="form-group">
+        <label>صورة الخدمة (اختياري):</label>
+        <input type="file" accept="image/*" />
+      </div>
+      <button class="btn-delete">حذف الخدمة</button>
+    `;
+
+    accordion.appendChild(content);
+    container.appendChild(accordion);
+
+    // فتح / إغلاق التبويب
+    header.addEventListener('click', () => {
+      const isOpen = content.classList.toggle('open');
+      header.classList.toggle('active', isOpen);
+      content.style.maxHeight = isOpen ? content.scrollHeight + 'px' : null;
+    });
+
+    // إعداد التحكم في الحقول حسب نوع الخدمة
+    const select = content.querySelector('select');
+    const lengthInputs = content.querySelectorAll('.length-width-group input');
+    const countGroup = content.querySelector('.count-group');
+    const countInput = countGroup.querySelector('input');
+
+    function updateInputs() {
+      const selected = select.value;
+      if (selected === 'لحاف' || selected === 'بطانية') {
+        lengthInputs.forEach(i => i.parentElement.style.display = 'none');
+        countGroup.style.display = 'block';
+      } else {
+        lengthInputs.forEach(i => i.parentElement.style.display = 'block');
+        countGroup.style.display = 'none';
+      }
+      updatePrice();
     }
 
-    priceElem.textContent = `السعر: ${localPrice.toFixed(2)} ريال`;
-    total += localPrice;
+    select.addEventListener('change', updateInputs);
+
+    function updatePrice() {
+      const type = select.value;
+      const service = serviceTypes.find(s => s.name === type);
+      let price = 0;
+      if (type === 'لحاف' || type === 'بطانية') {
+        const count = parseInt(countInput.value) || 0;
+        price = count * service.unitPrice;
+      } else {
+        const length = parseFloat(lengthInputs[0].value) || 0;
+        const width = parseFloat(lengthInputs[1].value) || 0;
+        price = length * width * service.unitPrice;
+      }
+      header.querySelector('.price').textContent = price.toFixed(2) + ' ريال';
+      updateTotalPrice();
+    }
+
+    lengthInputs.forEach(input => input.addEventListener('input', updatePrice));
+    countInput.addEventListener('input', updatePrice);
+
+    content.querySelector('.btn-delete').addEventListener('click', () => {
+      container.removeChild(accordion);
+      updateTotalPrice();
+      checkOrderButton();
+    });
+
+    // فتح التبويب الجديد فقط (بعد إغلاق البقية)
+    header.click();
+
+    updateInputs();
+  }
+
+  addServiceBtn.addEventListener('click', () => {
+    createAccordion();
+    checkOrderButton();
   });
 
-  totalPriceElem.textContent = `السعر الإجمالي: ${total.toFixed(2)} ريال`;
-}
-
-addServiceBtn.addEventListener('click', () => {
-  createServiceBlock(++servicesCount);
-});
-
-createServiceBlock(++servicesCount);
+  // تفعيل الزر عند وجود خدمة على الأقل (في حالة تحميل الصفحة)
+  checkOrderButton();
 </script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>طلب خدمات التنظيف</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Almarai:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  body {
+    font-family: 'Cairo', 'Almarai', 'Tajawal', sans-serif;
+    direction: rtl;
+    margin: 0;
+    background: #fafafa;
+    color: #333;
+    font-size: 12px;
+  }
+  header h1 {
+    font-size: 1rem;
+  }
+  .banner::after {
+    font-size: 1rem;
+  }
+  h2 {
+    font-size: 1.1rem;
+  }
+  .accordion-header {
+    font-size: 14px;
+  }
+  label {
+    font-size: 12px;
+  }
+  select, input[type="number"], input[type="file"] {
+    font-size: 12px;
+  }
+  .btn-delete {
+    font-size: 12px;
+  }
+  #addServiceBtn, #completeOrderBtn {
+    font-size: 14px;
+  }
+  #totalPrice {
+    font-size: 16px;
+  }
+  .features h3 {
+    font-size: 1.1rem;
+  }
+  .feature-item {
+    font-size: 12px;
+  }
+  footer {
+    font-size: 10px;
+  }
+</style>
+</head>
+<body>
+
+<!-- باقي الكود يبقى كما هو بدون تغيير -->
 
 </body>
 </html>
