@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  
+<!-- TomTom Maps SDK CSS -->
+<link rel="stylesheet" type="text/css" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.20.0/maps/maps.css"/>
+
+<!-- TomTom Maps SDK JS -->
+<script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.20.0/maps/maps-web.min.js"></script>
+
+  <style>
+  
+  /* مفتاح التشغيل */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* الشكل الخارجي للمفتاح */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+/* الدائرة الداخلية */
+.slider::before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  right: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+/* عند التفعيل */
+input:checked + .slider {
+  background-color: #305d58;
+}
+
+/* تحريك الدائرة عند التفعيل */
+input:checked + .slider::before {
+  transform: translateX(-24px);
+}
+.back-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 20px;
+  width: 100%;                /* ✅ عرض كامل */
+  box-sizing: border-box;     /* ✅ يحسب البادينج ضمن العرض */
+  max-width: 400px;           /* ⬅️ اختياري: حد أقصى للعرض على الشاشات الكبيرة */
+}
+
+  .back-btn:hover {
+    background-color: #c0392b;     /* أحمر أغمق عند التمرير */
+  }
+</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>طلب غسيل</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      background-color: #1e1e1e;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+.top-marquee {
+  width: 100%;
+  background-color: #00b894;
+  color: black;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 2px 0;
+  text-align: center;
+  border-bottom: 0px solid #00cec9;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  position: fixed;
+  top: 0;
+  z-index: 9999;
+}
+
+body {
+  padding-top: 25px; /* لتعويض الشريط العلوي */
+}
+
+    header.top-bar, footer.footer-bar {
+      background-color: #222;
+      width: 100%;
+      max-width: 420px;
+      padding: 10px 20px;
+      box-sizing: border-box;
+      border-bottom: 1px solid #444;
+    }
+
+    header.top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .banner {
+      width: 95%;
+      max-width: 420px;
+      margin: 15px 0;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .banner img {
+      width: 100%;
+      display: block;
+      border-radius: 20px;
+    }
+
+    .container {
+      background-color: #2c2c2c;
+      width: 95%;
+      max-width: 420px;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      box-sizing: border-box;
+      margin-bottom: 40px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #8ff8d0;
+      margin-bottom: 10px;
+    }
+
+    p {
+      text-align: center;
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    .services {
+      display: flex;
+      justify-content: space-around;
+      margin: 25px 0;
+    }
+
+    .service {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: #1a1a1a;
+      border: 2px solid #8ff8d0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .service:active {
+      transform: scale(0.95);
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 206, 201, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(0, 206, 201, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 206, 201, 0); }
+    }
+
+    .service.selected {
+      background-color: #00b894;
+      color: black;
+      border-color: #00cec9;
+      animation: pulse 0.6s;
+    }
+
+    .service i {
+      font-size: 20px;
+      margin-bottom: 5px;
+      color: #8ff8d0;
+    }
+
+    .inputs {
+      display: none;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .inputs select {
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background-color: #444;
+      color: white;
+      font-size: 14px;
+      box-sizing: border-box;
+      cursor: pointer;
+      min-width: 140px;
+    }
+
+    .btn {
+      background: linear-gradient(to right, #00b894, #00cec9);
+      padding: 12px;
+      border: none;
+      border-radius: 30px;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 16px;
+      width: 100%;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .summary {
+      background-color: #1a1a1a;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 15px;
+    }
+
+    .summary-item {
+      font-size: 14px;
+      padding: 5px 0;
+      border-bottom: 1px solid #444;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      animation: slideFadeIn 0.4s ease-in-out;
+    }
+
+    @keyframes slideFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      color: #ff7675;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    footer.footer-bar {
+      border-top: 1px solid #444;
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 20px;
+    }
+
+    .social-icons a {
+      color: #aaa;
+      font-size: 20px;
+      transition: color 0.3s;
+    }
+
+    .social-icons a:hover {
+      color: #00cec9;
+    }
+
+    .social-icons a.whatsapp:hover {
+      color: #305d58;
+    }
+
+    input[type="text"], select {
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: #444;
+      color: white;
+      font-size: 14px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    input[readonly] {
+      background-color: #333;
+      color: #aaa;
+      cursor: default;
+    }
+
+    .fade {
+      transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+      opacity: 0;
+      transform: scale(0.98);
+    }
+
+    .fade.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+  </style>
+</head>
+<body>
+  <div class="top-marquee">
+  <marquee behavior="scroll" direction="right" scrollamount="8">
+    ✨ مرحبًا بك في سجادكو – نظافة تليق بك! ✨ احصل على خدمة غسيل احترافية للسجاد والبطانيات 💧
+  </marquee>
+</div>
+
+<header class="top-bar">
+  <img src="https://www2.0zz0.com/2025/06/20/04/424573103.png" alt="لوجو Sejjadco" style="height: 45px;" />
+</header>
+
+<div class="banner">
+  <img src="https://www2.0zz0.com/2025/06/20/03/956921589.png" alt="بانر" />
+</div>
+
+<div class="container fade show" id="step1">
+  <h2>طلب خدمة غسيل</h2>
+  <p>يمكنك إضافة أكثر من خدمة</p>
+
+  <div class="services">
+    <div class="service" data-type="سجاد"><i class="fas fa-rug"></i> سجاد</div>
+    <div class="service" data-type="بطانيات"><i class="fas fa-bed"></i> بطانيات</div>
+    <div class="service" data-type="ألحفة"><i class="fas fa-layer-group"></i> ألحفة</div>
+  </div>
+
+  <div class="inputs" id="inputFields">
+    <select id="length"></select>
+    <select id="width"></select>
+    <select id="quantity"></select>
+    <button class="btn" onclick="addItem()">إضافة</button>
+  </div>
+
+<div class="summary" id="summary">
+  <h4>ملخص الطلب</h4>
+  <div id="summaryItems"></div>
+  <div id="totalPrice" style="margin-top: 10px; font-weight: bold; font-size: 18px;">
+    المجموع: 0 ريال
+  </div>
+</div>
+
+  <div id="nextStepBtn" style="text-align: center; margin-top: 20px; display: none;">
+    <button class="btn" onclick="goToStep2()">التالي</button>
+  </div>
+</div>
+
+<div class="container fade" id="step2" style="display: none;">
+<button onclick="goBack()" id="backBtn" class="back-btn">الرجوع للخلف</button>
+  <h2>المعلومات الشخصية</h2>
+  <p>يرجى إدخال البيانات التالية</p>
+
+  <input type="text" id="name" placeholder="الاسم" style="margin-bottom: 15px;" />
+  
+  <select id="city" disabled style="margin-bottom: 15px;">
+    <option value="جدة" selected>جدة</option>
+  </select>
+
+  <div style="position: relative; max-width: 420px; width: 100%; margin-bottom: 20px;">
+  <input type="text" id="districtInput" placeholder="اكتب اسم الحي..." style="width: 100%; padding: 12px; border-radius: 10px; border: none; background: #444; color: white; font-size: 14px; box-sizing: border-box;" autocomplete="off">
+  <ul id="districtList" style="position: absolute; top: 100%; left: 0; right: 0; background: #333; max-height: 200px; overflow-y: auto; border-radius: 10px; margin: 0; padding: 0; list-style: none; z-index: 999; display: none;"></ul>
+</div>
+
+<label style="display: block; color: #8ff8d0; font-weight: bold; margin-bottom: 10px;">
+  أضف موقعك على الخريطة
+</label>
+
+<label class="switch">
+  <input type="checkbox" id="toggleMap" onchange="toggleMap()" />
+  <span class="slider"></span>
+</label>
+<div id="mapContainer" style="display: none; margin-top: 15px;">
+  <div id="map" style="height: 300px; border-radius: 10px;"></div>
+  <div id="locationDetails" style="margin-top: 15px; color: white; font-weight: bold;">
+    <p>اضغط على الخريطة لتحديد موقعك</p>
+    <p id="districtName"></p>
+    <p id="coords"></p>
+  </div>
+</div>
+
+ <div class="summary" id="summaryCopy" style="margin-bottom: 20px; display: none;">
+  <h4>ملخص الطلب</h4>
+  <div id="summaryItemsCopy"></div>
+
+  <!-- ✅ عرض المجموع في نفس التنسيق -->
+  <div id="totalPriceCopy" style="margin-top: 10px; font-weight: bold; font-size: 18px;">
+    المجموع: 0 ريال
+  </div>
+</div>
+
+  <button class="btn" onclick="confirmOrder()">تأكيد الطلب</button>
+  
+</div>
+
+<footer class="footer-bar">
+  <div>تواصل معنا عبر:</div>
+  <div class="social-icons">
+    <a href="#" class="whatsapp"><i class="fab fa-whatsapp"></i></a>
+    <a href="#"><i class="fab fa-instagram"></i></a>
+    <a href="#"><i class="fab fa-facebook-f"></i></a>
+  </div>
+  <div>© 2025 شركة سجادكو</div>
+</footer>
+
+<script>
+  let selectedService = 'سجاد';
+
+  const services = document.querySelectorAll('.service');
+  const inputFields = document.getElementById('inputFields');
+  const summaryItems = document.getElementById('summaryItems');
+  const summarySection = document.getElementById('summary');
+  const lengthInput = document.getElementById('length');
+  const widthInput = document.getElementById('width');
+  const quantityInput = document.getElementById('quantity');
+
+  function populateSelect(select, placeholder) {
+    select.innerHTML = '';
+    const opt = document.createElement("option");
+    opt.text = placeholder;
+    opt.disabled = true;
+    opt.selected = true;
+    select.appendChild(opt);
+    for (let i = 1; i <= 10; i++) {
+      const option = document.createElement("option");
+      option.value = i;
+      option.text = i;
+      select.appendChild(option);
+    }
+  }
+
+  populateSelect(lengthInput, 'الطول (متر)');
+  populateSelect(widthInput, 'العرض (متر)');
+  populateSelect(quantityInput, 'عدد القطع');
+
+  window.addEventListener('DOMContentLoaded', () => {
+    services.forEach(s => s.classList.remove('selected'));
+    const carpet = [...services].find(s => s.getAttribute('data-type') === 'سجاد');
+    if (carpet) carpet.classList.add('selected');
+    inputFields.style.display = 'flex';
+    lengthInput.style.display = 'inline-block';
+    widthInput.style.display = 'inline-block';
+    quantityInput.style.display = 'none';
+    summarySection.style.display = 'none';
+
+    populateDeliveryDates();
+  });
+
+  services.forEach(service => {
+    service.addEventListener('click', () => {
+      services.forEach(s => s.classList.remove('selected'));
+      service.classList.add('selected');
+      selectedService = service.getAttribute('data-type');
+      inputFields.style.display = 'flex';
+      if (selectedService === 'سجاد') {
+        lengthInput.style.display = 'inline-block';
+        widthInput.style.display = 'inline-block';
+        quantityInput.style.display = 'none';
+      } else {
+        lengthInput.style.display = 'none';
+        widthInput.style.display = 'none';
+        quantityInput.style.display = 'inline-block';
+      }
+    });
+  });
+
+  function addItem() {
+    if (!selectedService) return;
+
+    let text = '', price = 0;
+
+    if (selectedService === 'سجاد') {
+      const length = parseInt(lengthInput.value);
+      const width = parseInt(widthInput.value);
+      if (!length || !width) return alert("اختر الطول والعرض.");
+      price = length * width;
+      text = `${selectedService} - ${length} × ${width} متر = ${price.toFixed(2)} ريال`;
+    } else {
+      const quantity = parseInt(quantityInput.value);
+      if (!quantity) return alert("اختر عدد القطع.");
+      price = quantity;
+      text = `${selectedService} - ${quantity} قطعة = ${price} ريال`;
+    }
+
+    const item = document.createElement('div');
+    item.classList.add('summary-item');
+    item.dataset.price = price;
+
+    const span = document.createElement('span');
+    span.innerText = text;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.innerText = 'حذف';
+    removeBtn.classList.add('remove-btn');
+    removeBtn.onclick = () => {
+      item.remove();
+      updateTotalPrice();
+      if (summaryItems.children.length === 0) {
+        summarySection.style.display = 'none';
+        document.getElementById('nextStepBtn').style.display = 'none';
+      }
+    };
+
+    item.appendChild(span);
+    item.appendChild(removeBtn);
+    summaryItems.appendChild(item);
+
+    summarySection.style.display = 'block';
+    document.getElementById('nextStepBtn').style.display = 'block';
+
+    lengthInput.selectedIndex = 0;
+    widthInput.selectedIndex = 0;
+    quantityInput.selectedIndex = 0;
+
+    updateTotalPrice();
+
+    setTimeout(() => {
+      const rect = summarySection.getBoundingClientRect();
+      window.scrollTo({
+        top: window.scrollY + rect.top - 100,
+        behavior: 'smooth'
+      });
+    }, 100);
+  }
+
+  function updateTotalPrice() {
+    const items = document.querySelectorAll('.summary-item');
+    let total = 0;
+    items.forEach(item => {
+      total += parseFloat(item.dataset.price) || 0;
+    });
+
+    const totalDiv = document.getElementById('totalPrice');
+    if (totalDiv) {
+      totalDiv.innerText = `المجموع: ${total.toFixed(2)} ريال`;
+    }
+  }
+
+  function goToStep2() {
+    if (summaryItems.children.length === 0) {
+      alert("يرجى إضافة خدمة واحدة على الأقل قبل المتابعة.");
+      return;
+    }
+
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+
+    step1.classList.remove('show');
+    setTimeout(() => {
+      step1.style.display = 'none';
+      step2.style.display = 'block';
+      step2.classList.add('show');
+      window.scrollTo(0, 0);
+    }, 300);
+
+    const copyTarget = document.getElementById('summaryItemsCopy');
+    copyTarget.innerHTML = summaryItems.innerHTML;
+
+    const originalTotal = document.getElementById('totalPrice');
+    const totalCopy = document.getElementById('totalPriceCopy');
+    if (originalTotal && totalCopy) {
+      totalCopy.innerText = originalTotal.innerText;
+    }
+
+    document.getElementById('summaryCopy').style.display = 'block';
+  }
+
+  function goBack() {
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+
+    step2.classList.remove('show');
+    setTimeout(() => {
+      step2.style.display = 'none';
+      step1.style.display = 'block';
+      step1.classList.add('show');
+      window.scrollTo(0, 0);
+    }, 300);
+  }
+
+  function populateDeliveryDates() {
+    const deliveryDateSelect = document.getElementById('deliveryDate');
+    deliveryDateSelect.innerHTML = '';
+
+    const today = new Date();
+    for (let i = 0; i <= 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      const dd = String(date.getDate()).padStart(2, '0');
+      const options = { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' };
+      const displayDate = date.toLocaleDateString('ar-SA', options);
+
+      const option = document.createElement('option');
+      option.value = `${yyyy}-${mm}-${dd}`;
+      option.textContent = displayDate;
+      if (i === 0) option.selected = true;
+      deliveryDateSelect.appendChild(option);
+    }
+  }
+
+  function confirmOrder() {
+    const name = document.getElementById('name').value.trim();
+    const district = document.getElementById('districtName').innerText.replace("الحي: ", "");
+    const deliveryDate = document.getElementById('deliveryDate').value;
+
+    if (!name) return alert("يرجى إدخال الاسم.");
+    if (!district || district === "غير معروف") return alert("يرجى اختيار الحي.");
+    if (!deliveryDate) return alert("يرجى اختيار تاريخ الاستلام.");
+
+    alert("تم تأكيد الطلب بنجاح!");
+  }
+
+  let map, marker;
+
+  function toggleMap() {
+    const mapDiv = document.getElementById('mapContainer');
+    const toggle = document.getElementById('toggleMap');
+
+    if (toggle.checked) {
+      mapDiv.style.display = 'block';
+
+      if (typeof tt === 'undefined') {
+        alert("تعذر تحميل الخريطة. تحقق من اتصال الإنترنت أو مكتبة TomTom.");
+        return;
+      }
+
+      if (!map) {
+        initMap();
+      } else {
+        setTimeout(() => {
+          map.resize();
+        }, 100);
+      }
+    } else {
+      mapDiv.style.display = 'none';
+    }
+  }
+
+  function initMap() {
+    map = tt.map({
+      key: '31iqZGZC77BlqvybMoXUZHvSJGGIUM6H',
+      container: 'map',
+      center: [39.1925, 21.4858],
+      zoom: 12
+    });
+
+    map.addControl(new tt.NavigationControl());
+
+    map.on('click', function (e) {
+      const lngLat = e.lngLat;
+
+      if (marker) {
+        marker.setLngLat(lngLat);
+      } else {
+        marker = new tt.Marker().setLngLat(lngLat).addTo(map);
+      }
+
+      document.getElementById('coords').innerText = `الإحداثيات: ${lngLat.lat.toFixed(6)}, ${lngLat.lng.toFixed(6)}`;
+
+      fetch(`https://api.tomtom.com/search/2/reverseGeocode/${lngLat.lat},${lngLat.lng}.json?key=31iqZGZC77BlqvybMoXUZHvSJGGIUM6H`)
+        .then(response => response.json())
+        .then(data => {
+          let address = data.addresses && data.addresses[0] && data.addresses[0].address;
+          let district = address.municipalitySubdivision || address.municipality || 'غير معروف';
+          document.getElementById('districtName').innerText = `الحي: ${district}`;
+        })
+        .catch(() => {
+          document.getElementById('districtName').innerText = 'الحي: غير معروف';
+        });
+    });
+  }
+</script>
+<script>
+  const districts = [
+    "الروضة", "السلامة", "النهضة", "الفيصلية", "مشرفة",
+    "العزيزية", "الحمراء", "بني مالك", "الجامعة", "الصفا",
+    "النزهة", "المروة", "الربوة", "الرحاب", "السامر",
+    "النسيم", "المطار", "المرجان", "البساتين", "المحمدية",
+    "الشاطئ", "النعيم", "الزهراء", "البوادي", "الربوة",
+    "الخالدية", "الأندلس", "الروابي", "الجامعة", "الهنداوية",
+    "البلد", "غليل", "الثعالبة", "الأجواد", "المنار", "السامر",
+    "الحرازات", "الحمدانية", "الأجاويد", "السليمانية", "المحجر",
+    "كيلو 14", "كيلو 11", "كيلو 10", "كيلو 7", "كيلو 5", "كيلو 2",
+    "البغدادية", "النزهة", "الفيحاء", "الصفا", "بترومين", "الورود",
+    "الريان", "المروه", "النسيم", "الواحة", "الرغامة", "قويزة",
+    "الهدى", "الرحمانية", "الروضه", "الفلاح", "النخيل", "الشرفية",
+    "البغدادية الشرقية", "البغدادية الغربية", "المدينة الصناعية", "القريات",
+    "المكرونة", "العمارية", "الخمره", "الكرنتينا", "الخالدية", "الرويس",
+    "السلام", "الواحة", "ثول", "رابغ", "بحرة", "الليث", "القنفذة", "خليص",
+    "وادي فاطمة", "ذهبان", "المظيلف", "الجموم", "عسفان", "المصفاة", "أم السلم"
+    // أضف المزيد حسب الحاجة
+  ];
+
+  const input = document.getElementById("districtInput");
+  const list = document.getElementById("districtList");
+
+  input.addEventListener("input", () => {
+    const value = input.value.trim();
+    list.innerHTML = "";
+    if (value === "") {
+      list.style.display = "none";
+      return;
+    }
+
+    const filtered = districts.filter(d =>
+      d.includes(value)
+    );
+
+    if (filtered.length === 0) {
+      list.style.display = "none";
+      return;
+    }
+
+    filtered.forEach(d => {
+      const li = document.createElement("li");
+      li.textContent = d;
+      li.style.padding = "10px";
+      li.style.cursor = "pointer";
+      li.style.color = "white";
+      li.addEventListener("click", () => {
+        input.value = d;
+        list.style.display = "none";
+      });
+      list.appendChild(li);
+    });
+
+    list.style.display = "block";
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("#districtInput")) {
+      list.style.display = "none";
+    }
+  });
+</script>
